@@ -1,10 +1,27 @@
 Parcial practico Angie Melissa Ocoro Hurtado 2310176-3743
 
-ejecucion programa secuencial  secuencial Promedio	39,288
+ejecucion programa secuencial  secuencial  39,299
+39,299
+39,461
+39,104
+37,139 - (x)
+49,801 + (x)
+
 
 numero de nucleos 2 Promedio	34,729
+38,851 + (x)
+38,629
+27,438
+25,656 - (x)
+38,120
 
 numero de nucleos 4 Promedio	37,942
+36,521
+35,574 - (x)
+40,173
+37,131
+43,959 + (x)
+
 
 Speedup 2 hilos 1,131
 Speedup 4 hilos 1,035
