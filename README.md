@@ -1,129 +1,31 @@
-# Procesamiento de imágenes
+Parcial practico Angie Melissa Ocoro Hurtado 2310176-3743
 
-Este directorio contiene un conjunto de códigos que permiten aplicar un conjunto de filtros básicos a una imagen usando el lenguaje C.
-Los filtros que se pueden aplicar son:
+ejecucion programa secuencial  secuencial Promedio	39,288
 
-- Filtro de desenfoque.
-- Filtro de detección de bordes.
-- Filtro de Realce. 
+numero de nucleos 2 Promedio	34,729
 
-El programa `main.c` contiene el código para aplicar estos filtros.
-Este programa lee la información de los bits que representan una imagen y hace las transformaciones necesarias.
-Se han desarrollado dos scripts en Python que permiten extraer los bits de información de una imagen en formato PNG (`fromPNG2Bin.py`) y toma un conjunto de bits y los almacena de regreso en una imagen en formato PNG (`fromBin2PNG.py`).
+numero de nucleos 4 Promedio	37,942
 
-Se ha desarrollado un script en Bash llamado `all.sh` y el cual integra los códigos descritos anteriormente para aplicar un filtro a una imagen. 
+Speedup 2 hilos 1,131
+Speedup 4 hilos 1,035
 
-El `Makefile` permite la compilación y ejecución de los códigos/archivos descritos anteriormente.
+Eficiencia 2 hilos 56,6 % 
+Eficiencia 4 hilos 25,9 %
 
-- `make all` permite la compilación y la ejecución del programa.
-- `make compile` permite la compilación del programa `main.c`.
-- `make clean` borra archivos creados durante la compilación y la ejecución del programa.
+Analisis de resultado:
+Al analizar los resultados de mi programa, empecé observando el tiempo de ejecución en modo secuencial, que fue de 39,288 ms. Este valor me sirvió como
+referencia para evaluar el rendimiento de las versiones paralelas.Cuando ejecuté el programa utilizando 2 núcleos, el tiempo de ejecución promedio disminuyó a
+ 34,729 ms. Esto representa una mejora significativa en comparación con la ejecución secuencial, lo que indica que la paralelización fue efectiva al aprovechar 
+los recursos de hardware disponibles. El speedup obtenido con 2 hilos fue de 1,131, lo que significa que el programa se volvió 1.13 veces más rápido 
+en comparación con la versión secuencial.Pero al aumentar el número de núcleos a 4, observé que el tiempo de ejecución promedio aumentó a 37,942 ms. Este incremento fue inesperado, 
+ya que normalmente se esperaría que utilizar más núcleos redujera aún más el tiempo de ejecución. Este comportamiento se por la sobrecarga asociada 
+con la gestión de hilos, así como la competencia por recursos compartidos, como la memoria, pueden haber afectado negativamente el rendimiento.
+Al calcular la eficiencia de los hilos, encontré que con 2 hilos era del 56,6%, lo que indica que más de la mitad de la capacidad de procesamiento de
+los núcleos se utilizó de manera efectiva. la eficiencia con 4 hilos cayó al 25,9%. Esta disminución refuerza la idea de que al aumentar
+el número de hilos, la sobrecarga de gestión y la competencia por recursos pueden contrarrestar las ventajas que la paralelización debería ofrecer.
+los resultados muestran que la paralelización con 2 hilos tiene mas ventaja en a la hora de tiempo de ejecución, mientras que el uso de 4 hilos 
+resultó en un rendimiento decreciente. Esto muestra la importancia no solo la tener en cuenta la cantidad de hilos, sino también la naturaleza del problema
+ y la forma en que se gestionan los recursos a la hora de hacer la paralelización.
 
-## Descripción 
 
-El script `all.sh` usa tres programas le aplican un filtro a una imagen PNG de 1024x1024.
-
-El script `all.sh` contiene lo siguiente:
-
-```
-#!/usr/bin/env bash
-INPUT_PNG="image.png"
-TEMP_FILE="image.bin"
-python3 fromPNG2Bin.py ${INPUT_PNG}
-./main ${TEMP_FILE}
-python3 fromBin2PNG.py ${TEMP_FILE}.new
-```
-
-Los tres programas que se usan son `fromPNG2Bin.py`, `fromBin2PNG.py` y `main`. 
-En este caso se asume que `image.png` es una imagen PNG de 1024x1024.
-Lo que hace el script `fromPNG2Bin.py` es convertir la imagen de formanto PNG a una secuencia de pixeles.
-Esa secuencia de pixeles queda almacenada en `image.bin` (`${TEMP_FILE}`).
-Sobre los datos en `image.bin` se aplica un filtro que está en el archivo `./main`. 
-Al terminar la ejecución del programa `main` se genera un archivo en este caso llamado `image.bin.new`.
-El archivo `image.bin.new` es pasado al script `fromBin2PNG.py` y genera un nuevo archivo llamado `image.bin.PNG`. 
-Este archivo es el archivo que contiene el PNG alterado.
-
-## Otros posibles filtros
-
-Para usar los filtros que se presentan a continuación se debe cambiar la función `aplicarFiltro` que se encuentra en el programa `main.c`.
-
-### Filtro de desenfoque (Blur Filter)
-
-```
-void aplicarFiltro(int *imagen, int *imagenProcesada, int width, int height) {
-    // Recorre cada píxel de la imagen (excepto los bordes)
-    for (int y = 1; y < height - 1; y++) {
-        for (int x = 1; x < width - 1; x++) {
-            // Promedia los valores de los píxeles vecinos
-            int sum = 0;
-            sum += imagen[(y - 1) * width + (x - 1)];  // Superior Izquierda
-            sum += imagen[(y - 1) * width + x];        // Superior
-            sum += imagen[(y - 1) * width + (x + 1)];  // Superior Derecha
-            sum += imagen[y * width + (x - 1)];        // Izquierda
-            sum += imagen[y * width + x];              // Centro
-            sum += imagen[y * width + (x + 1)];        // Derecha
-            sum += imagen[(y + 1) * width + (x - 1)];  // Inferior Izquierda
-            sum += imagen[(y + 1) * width + x];        // Inferior
-            sum += imagen[(y + 1) * width + (x + 1)];  // Inferior Derecha
-
-            imagenProcesada[y * width + x] = sum / 9;  // Asigna el promedio al píxel procesado
-        }
-    }
-}
-
-```
-
-### Filtro de detección de bordes (Edge Detection) - Filtro Sobel
-
-```
-void aplicarFiltro(int *imagen, int *imagenProcesada, int width, int height) {
-    int Gx[3][3] = {{-1, 0, 1}, {-2, 0, 2}, {-1, 0, 1}};
-    int Gy[3][3] = {{-1, -2, -1}, {0, 0, 0}, {1, 2, 1}};
-
-    for (int y = 1; y < height - 1; y++) {
-        for (int x = 1; x < width - 1; x++) {
-            int sumX = 0;
-            int sumY = 0;
-
-            // Aplicar máscaras de Sobel (Gx y Gy)
-            for (int ky = -1; ky <= 1; ky++) {
-                for (int kx = -1; kx <= 1; kx++) {
-                    sumX += imagen[(y + ky) * width + (x + kx)] * Gx[ky + 1][kx + 1];
-                    sumY += imagen[(y + ky) * width + (x + kx)] * Gy[ky + 1][kx + 1];
-                }
-            }
-
-            // Calcular magnitud del gradiente
-            int magnitude = abs(sumX) + abs(sumY);
-            imagenProcesada[y * width + x] = (magnitude > 255) ? 255 : magnitude;  // Normalizar a 8 bits
-        }
-    }
-}
-
-```
-
-### Filtro de Realce (Sharpen Filter)
-
-```
-void aplicarFiltro(int *imagen, int *imagenProcesada, int width, int height) {
-    int kernel[3][3] = {{0, -1, 0}, {-1, 5, -1}, {0, -1, 0}};
-
-    for (int y = 1; y < height - 1; y++) {
-        for (int x = 1; x < width - 1; x++) {
-            int sum = 0;
-
-            // Aplicar kernel de realce
-            for (int ky = -1; ky <= 1; ky++) {
-                for (int kx = -1; kx <= 1; kx++) {
-                    sum += imagen[(y + ky) * width + (x + kx)] * kernel[ky + 1][kx + 1];
-                }
-            }
-
-            // Clampeo del valor para que esté entre 0 y 255
-            imagenProcesada[y * width + x] = (sum > 255) ? 255 : (sum < 0) ? 0 : sum;
-        }
-    }
-}
-
-```
 
