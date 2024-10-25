@@ -1,0 +1,1 @@
+# ParcialTeorico_Paralelas_MelissaOcoro_2310176-3743
