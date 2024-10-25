@@ -11,19 +11,20 @@ ejecucion programa secuencial  secuencial Promedio ( 39,299 )
 
 numero de nucleos 2 Promedio	(34,729 )
 
-38,851 + (x)
+38,120
 38,629
 27,438
 25,656 - (x)
-38,120
+38,851 + (x)
+
 
 numero de nucleos 4 Promedio	(37,942 )
 
 36,521
-35,574 - (x)
 40,173
 37,131
 43,959 + (x)
+35,574 - (x)
 
 
 Speedup 2 hilos 1,131
